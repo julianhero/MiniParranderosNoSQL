@@ -1,9 +1,16 @@
 package uniandes.edu.co.demo.modelo;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TarjetaCredito {
     private String numero;
+    @Field("nombreEnTarjeta")
+    @JsonProperty("nombreEnTarjeta")
     private String nombreTarjeta;
     private String vencimiento;
+    @Field("cvv")
+    @JsonProperty("cvv")
     private String codigo;
 
     public TarjetaCredito() {

@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 @Document(collection = "usuarios")
 public class Usuario {
     @Id
@@ -14,20 +16,21 @@ public class Usuario {
     private String correo;
     private String celular;
     private String cedula;
-    private List<TarjetaCredito> tarjeta;
+    private List<TarjetaCredito> tarjetas;
 
     public Usuario() {
     }
 
+    @JsonCreator
     public Usuario(String id, String tipo, String nombre, String correo, String celular, String cedula,
-            List<TarjetaCredito> tarjeta) {
+            List<TarjetaCredito> tarjetas) {
         this.id = id;
         this.tipo = tipo;
         this.nombre = nombre;
         this.correo = correo;
         this.celular = celular;
         this.cedula = cedula;
-        this.tarjeta = tarjeta;
+        this.tarjetas = tarjetas;
 
     }
 
@@ -79,12 +82,13 @@ public class Usuario {
         this.cedula = cedula;
     }
 
-    public List<TarjetaCredito> getTarjeta() {
-        return tarjeta;
+
+    public List<TarjetaCredito> getTarjetas() {
+        return tarjetas;
     }
 
-    public void setTarjeta(List<TarjetaCredito> tarjeta) {
-        this.tarjeta = tarjeta;
+    public void setTarjetas(List<TarjetaCredito> tarjetas) {
+        this.tarjetas = tarjetas;
     }
 
 }

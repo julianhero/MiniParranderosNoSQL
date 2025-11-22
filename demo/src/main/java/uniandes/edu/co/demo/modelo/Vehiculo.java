@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Vehiculo {
     @Id
     private String id;
-    private Usuario conductor_id;
+    private String conductor_id;
     private String tipo;
     private String marca;
     private String modelo;
@@ -23,7 +23,7 @@ public class Vehiculo {
     public Vehiculo() {
     }
 
-    public Vehiculo(String id, Usuario conductor_id, String tipo, String marca, String modelo, String color,
+    public Vehiculo(String id, String conductor_id, String tipo, String marca, String modelo, String color,
             String placa, String ciudad, Number capacidad, String nivel, List<Disponibilidad> disponibilidad) {
         this.id = id;
         this.conductor_id = conductor_id;
@@ -47,11 +47,11 @@ public class Vehiculo {
         this.id = id;
     }
 
-    public Usuario getConductor_id() {
+    public String getConductor_id() {
         return conductor_id;
     }
 
-    public void setConductor_id(Usuario conductor_id) {
+    public void setConductor_id(String conductor_id) {
         this.conductor_id = conductor_id;
     }
 
