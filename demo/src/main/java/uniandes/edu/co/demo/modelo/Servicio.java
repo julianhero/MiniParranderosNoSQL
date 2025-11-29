@@ -1,42 +1,44 @@
 package uniandes.edu.co.demo.modelo;
-
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Document(collection = "servicios")
 public class Servicio {
     @Id
     private String id;
-    private Usuario cliente_id;
-    private Usuario conductor_id;
-    private Vehiculo vehiculo_id;
+    private String usuario_id;
+    private String conductor_id;
+    private String vehiculo_id;
     private String tipoServicio;
     private String nivel;
     private Punto origen;
+    @JsonAlias({"destino","destinos"})
     private List<Punto> destino;
-    private Number distancia;
+    @JsonAlias({"distancia","distancia_km"})
+    private Number distancia_km;
     private Number costo;
-    private Date horaInicio;
-    private Date horaFin;
+    private LocalDateTime horaInicio;
+    private LocalDateTime horaFin;
 
     public Servicio() {
     }
 
-    public Servicio(String id, Usuario cliente_id, Usuario conductor_id, Vehiculo vehiculo_id, String tipoServicio,
-            String nivel, Punto origen, List<Punto> destino, Number distancia, Number costo, Date horaInicio,
-            Date horaFin) {
+    public Servicio(String id, String usuario_id, String conductor_id, String vehiculo_id, String tipoServicio,
+            String nivel, Punto origen, List<Punto> destino, Number distancia_km, Number costo, LocalDateTime horaInicio,
+            LocalDateTime horaFin) {
         this.id = id;
-        this.cliente_id = cliente_id;
+        this.usuario_id = usuario_id;
         this.conductor_id = conductor_id;
         this.vehiculo_id = vehiculo_id;
         this.tipoServicio = tipoServicio;
         this.nivel = nivel;
         this.origen = origen;
         this.destino = destino;
-        this.distancia = distancia;
+        this.distancia_km = distancia_km;
         this.costo = costo;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
@@ -50,27 +52,27 @@ public class Servicio {
         this.id = id;
     }
 
-    public Usuario getCliente_id() {
-        return cliente_id;
+    public String getUsuario_id() {
+        return usuario_id;
     }
 
-    public void setCliente_id(Usuario cliente_id) {
-        this.cliente_id = cliente_id;
+    public void setUsuario_id(String cliente_id) {
+        this.usuario_id = cliente_id;
     }
 
-    public Usuario getConductor_id() {
+    public String getConductor_id() {
         return conductor_id;
     }
 
-    public void setConductor_id(Usuario conductor_id) {
+    public void setConductor_id(String conductor_id) {
         this.conductor_id = conductor_id;
     }
 
-    public Vehiculo getVehiculo_id() {
+    public String getVehiculo_id() {
         return vehiculo_id;
     }
 
-    public void setVehiculo_id(Vehiculo vehiculo_id) {
+    public void setVehiculo_id(String vehiculo_id) {
         this.vehiculo_id = vehiculo_id;
     }
 
@@ -106,12 +108,12 @@ public class Servicio {
         this.destino = destino;
     }
 
-    public Number getDistancia() {
-        return distancia;
+    public Number getDistancia_km() {
+        return distancia_km;
     }
 
-    public void setDistancia(Number distancia) {
-        this.distancia = distancia;
+    public void setDistancia_km(Number distancia) {
+        this.distancia_km = distancia;
     }
 
     public Number getCosto() {
@@ -122,19 +124,19 @@ public class Servicio {
         this.costo = costo;
     }
 
-    public Date getHoraInicio() {
+    public LocalDateTime getHoraInicio() {
         return horaInicio;
     }
 
-    public void setHoraInicio(Date horaInicio) {
+    public void setHoraInicio(LocalDateTime horaInicio) {
         this.horaInicio = horaInicio;
     }
 
-    public Date getHoraFin() {
+    public LocalDateTime getHoraFin() {
         return horaFin;
     }
 
-    public void setHoraFin(Date horaFin) {
+    public void setHoraFin(LocalDateTime horaFin) {
         this.horaFin = horaFin;
     }
 

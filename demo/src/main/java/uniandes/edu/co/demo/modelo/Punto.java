@@ -1,5 +1,7 @@
 package uniandes.edu.co.demo.modelo;
 
+
+
 public class Punto {
     private String direccion;
     private double latitud;

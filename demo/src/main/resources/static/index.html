@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parranderos - Panel de Pruebas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        .container-main {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+        h3 {
+            color: #764ba2;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .btn-group-custom {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .response-box {
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .response-box.error {
+            background: #ffebee;
+            border-color: #f44336;
+            color: #c62828;
+        }
+        .response-box.success {
+            background: #e8f5e9;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+        .tabs {
+            margin-bottom: 20px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .nav-tabs .nav-link {
+            color: #667eea;
+            border: none;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-tabs .nav-link.active {
+            color: #764ba2;
+            border-bottom: 2px solid #764ba2;
+            background: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-lg container-main">
+        <h1>🚗 Parranderos - Panel de Pruebas</h1>
+
+        <!-- Navegación por tabs -->
+        <ul class="nav nav-tabs tabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" onclick="switchTab('usuarios')">Usuarios</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" onclick="switchTab('vehiculos')">Vehículos</button>
+            </li>
+        </ul>
+
+        <!-- SECCIÓN USUARIOS -->
+        <div id="usuarios" class="tab-content active">
+            <h3>Gestión de Usuarios</h3>
+
+            <!-- Crear Usuario -->
+            <div class="form-section">
+                <h5>Crear Usuario</h5>
+                <form onsubmit="createUsuario(event)">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">ID:</label>
+                            <input type="text" class="form-control" id="usuarioId" placeholder="u001" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre:</label>
+                            <input type="text" class="form-control" id="usuarioNombre" placeholder="Juan Pérez" required>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Tipo:</label>
+                            <input type="text" class="form-control" id="usuarioTipo" placeholder="servicio" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Correo:</label>
+                            <input type="email" class="form-control" id="usuarioCorreo" placeholder="juan@example.com" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Cédula:</label>
+                            <input type="text" class="form-control" id="usuarioCedula" placeholder="123456" required>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Celular:</label>
+                            <input type="text" class="form-control" id="usuarioCelular" placeholder="3100000000" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success mt-3">Crear Usuario</button>
+                </form>
+                <div id="usuarioCreateResponse"></div>
+            </div>
+
+            <!-- Listar Usuarios -->
+            <div class="form-section">
+                <h5>Listar Todos los Usuarios</h5>
+                <button class="btn btn-info" onclick="listUsuarios()">Obtener Lista</button>
+                <div id="usuarioListResponse"></div>
+            </div>
+
+            <!-- Buscar Usuario por ID -->
+            <div class="form-section">
+                <h5>Buscar Usuario por ID</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="searchUsuarioId" placeholder="u001">
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary" onclick="searchUsuarioById()">Buscar</button>
+                    </div>
+                </div>
+                <div id="usuarioSearchResponse"></div>
+            </div>
+
+            <!-- Actualizar Usuario -->
+            <div class="form-section">
+                <h5>Actualizar Usuario</h5>
+                <form onsubmit="updateUsuario(event)">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">ID del Usuario (a actualizar):</label>
+                            <input type="text" class="form-control" id="updateUsuarioId" placeholder="u001" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nuevo Nombre:</label>
+                            <input type="text" class="form-control" id="updateUsuarioNombre" placeholder="Nuevo nombre">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nuevo Correo:</label>
+                            <input type="email" class="form-control" id="updateUsuarioCorreo" placeholder="nuevo@example.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nuevo Celular:</label>
+                            <input type="text" class="form-control" id="updateUsuarioCelular" placeholder="3100000000">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-warning mt-3">Actualizar Usuario</button>
+                </form>
+                <div id="usuarioUpdateResponse"></div>
+            </div>
+
+            <!-- Eliminar Usuario -->
+            <div class="form-section">
+                <h5>Eliminar Usuario</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="deleteUsuarioId" placeholder="u001">
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-danger" onclick="deleteUsuario()">Eliminar</button>
+                    </div>
+                </div>
+                <div id="usuarioDeleteResponse"></div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN VEHÍCULOS -->
+        <div id="vehiculos" class="tab-content">
+            <h3>Gestión de Vehículos</h3>
+
+            <!-- Crear Vehículo -->
+            <div class="form-section">
+                <h5>Crear Vehículo</h5>
+                <form onsubmit="createVehiculo(event)">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label">ID:</label>
+                            <input type="text" class="form-control" id="vehiculoId" placeholder="v001" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">ID Conductor:</label>
+                            <input type="text" class="form-control" id="vehiculoConductor" placeholder="u001" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Tipo:</label>
+                            <input type="text" class="form-control" id="vehiculoTipo" placeholder="camioneta" required>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Marca:</label>
+                            <input type="text" class="form-control" id="vehiculoMarca" placeholder="Toyota" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Modelo:</label>
+                            <input type="text" class="form-control" id="vehiculoModelo" placeholder="Hiace" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Color:</label>
+                            <input type="text" class="form-control" id="vehiculoColor" placeholder="Blanco" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Placa:</label>
+                            <input type="text" class="form-control" id="vehiculoPlaca" placeholder="ABC123" required>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Ciudad:</label>
+                            <input type="text" class="form-control" id="vehiculoCiudad" placeholder="Bogotá" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Capacidad:</label>
+                            <input type="number" class="form-control" id="vehiculoCapacidad" placeholder="4" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Disponibilidad (JSON):</label>
+                            <textarea class="form-control" id="vehiculoDisponibilidad" placeholder='[{"dia":"Lunes","horaInicio":"08:00","horaFin":"12:00","tipoServicio":"transporte de pasajeros"}]' rows="2"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success mt-3">Crear Vehículo</button>
+                </form>
+                <div id="vehiculoCreateResponse"></div>
+            </div>
+
+            <!-- Listar Vehículos -->
+            <div class="form-section">
+                <h5>Listar Todos los Vehículos</h5>
+                <button class="btn btn-info" onclick="listVehiculos()">Obtener Lista</button>
+                <div id="vehiculoListResponse"></div>
+            </div>
+
+            <!-- Buscar Vehículo por ID -->
+            <div class="form-section">
+                <h5>Buscar Vehículo por ID</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="searchVehiculoId" placeholder="v001">
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary" onclick="searchVehiculoById()">Buscar</button>
+                    </div>
+                </div>
+                <div id="vehiculoSearchResponse"></div>
+            </div>
+
+            <!-- Actualizar Vehículo -->
+            <div class="form-section">
+                <h5>Actualizar Vehículo</h5>
+                <form onsubmit="updateVehiculo(event)">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">ID del Vehículo (a actualizar):</label>
+                            <input type="text" class="form-control" id="updateVehiculoId" placeholder="v001" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nuevo Modelo:</label>
+                            <input type="text" class="form-control" id="updateVehiculoModelo" placeholder="Nuevo modelo">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nueva Capacidad:</label>
+                            <input type="number" class="form-control" id="updateVehiculoCapacidad" placeholder="4">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nuevo Color:</label>
+                            <input type="text" class="form-control" id="updateVehiculoColor" placeholder="Blanco">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-warning mt-3">Actualizar Vehículo</button>
+                </form>
+                <div id="vehiculoUpdateResponse"></div>
+            </div>
+
+            <!-- Eliminar Vehículo -->
+            <div class="form-section">
+                <h5>Eliminar Vehículo</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="deleteVehiculoId" placeholder="v001">
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-danger" onclick="deleteVehiculo()">Eliminar</button>
+                    </div>
+                </div>
+                <div id="vehiculoDeleteResponse"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:8080';
+
+        // Cambiar entre tabs
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Mostrar respuesta
+        function showResponse(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            const className = isError ? 'response-box error' : 'response-box success';
+            element.innerHTML = `<div class="${className}">${JSON.stringify(data, null, 2)}</div>`;
+        }
+
+        // ========== USUARIOS ==========
+
+        // Crear Usuario
+        function createUsuario(event) {
+            event.preventDefault();
+            const usuario = {
+                _id: document.getElementById('usuarioId').value,
+                nombre: document.getElementById('usuarioNombre').value,
+                tipo: document.getElementById('usuarioTipo').value,
+                correo: document.getElementById('usuarioCorreo').value,
+                cedula: document.getElementById('usuarioCedula').value,
+                celular: document.getElementById('usuarioCelular').value,
+                tarjetas: []
+            };
+
+            fetch(`${API_BASE}/usuarios/new/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(usuario)
+            })
+            .then(res => res.text())
+            .then(data => {
+                showResponse('usuarioCreateResponse', data);
+                event.target.reset();
+            })
+            .catch(err => showResponse('usuarioCreateResponse', 'Error: ' + err.message, true));
+        }
+
+        // Listar Usuarios
+        function listUsuarios() {
+            fetch(`${API_BASE}/usuarios`)
+                .then(res => res.json())
+                .then(data => showResponse('usuarioListResponse', data))
+                .catch(err => showResponse('usuarioListResponse', 'Error: ' + err.message, true));
+        }
+
+        // Buscar Usuario por ID
+        function searchUsuarioById() {
+            const id = document.getElementById('searchUsuarioId').value;
+            if (!id) {
+                showResponse('usuarioSearchResponse', 'Por favor ingresa un ID', true);
+                return;
+            }
+            fetch(`${API_BASE}/usuarios/${id}`)
+                .then(res => res.json())
+                .then(data => showResponse('usuarioSearchResponse', data))
+                .catch(err => showResponse('usuarioSearchResponse', 'Error: ' + err.message, true));
+        }
+
+        // Actualizar Usuario
+        function updateUsuario(event) {
+            event.preventDefault();
+            const id = document.getElementById('updateUsuarioId').value;
+            const usuario = {
+                nombre: document.getElementById('updateUsuarioNombre').value || undefined,
+                correo: document.getElementById('updateUsuarioCorreo').value || undefined,
+                celular: document.getElementById('updateUsuarioCelular').value || undefined
+            };
+
+            fetch(`${API_BASE}/usuarios/${id}/edit/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(usuario)
+            })
+            .then(res => res.text())
+            .then(data => {
+                showResponse('usuarioUpdateResponse', data);
+                event.target.reset();
+            })
+            .catch(err => showResponse('usuarioUpdateResponse', 'Error: ' + err.message, true));
+        }
+
+        // Eliminar Usuario
+        function deleteUsuario() {
+            const id = document.getElementById('deleteUsuarioId').value;
+            if (!id) {
+                showResponse('usuarioDeleteResponse', 'Por favor ingresa un ID', true);
+                return;
+            }
+            fetch(`${API_BASE}/usuarios/${id}/delete`, {
+                method: 'DELETE'
+            })
+            .then(res => res.text())
+            .then(data => {
+                showResponse('usuarioDeleteResponse', data);
+                document.getElementById('deleteUsuarioId').value = '';
+            })
+            .catch(err => showResponse('usuarioDeleteResponse', 'Error: ' + err.message, true));
+        }
+
+        // ========== VEHÍCULOS ==========
+
+        // Crear Vehículo
+        function createVehiculo(event) {
+            event.preventDefault();
+            let disponibilidad = [];
+            try {
+                const dispText = document.getElementById('vehiculoDisponibilidad').value;
+                disponibilidad = dispText ? JSON.parse(dispText) : [];
+            } catch (e) {
+                showResponse('vehiculoCreateResponse', 'Error: JSON de disponibilidad inválido', true);
+                return;
+            }
+
+            const vehiculo = {
+                _id: document.getElementById('vehiculoId').value,
+                conductor_id: document.getElementById('vehiculoConductor').value,
+                tipo: document.getElementById('vehiculoTipo').value,
+                marca: document.getElementById('vehiculoMarca').value,
+                modelo: document.getElementById('vehiculoModelo').value,
+                color: document.getElementById('vehiculoColor').value,
+                placa: document.getElementById('vehiculoPlaca').value,
+                ciudad: document.getElementById('vehiculoCiudad').value,
+                capacidad: parseInt(document.getElementById('vehiculoCapacidad').value),
+                disponibilidad: disponibilidad
+            };
+
+            fetch(`${API_BASE}/vehiculos/new/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(vehiculo)
+            })
+            .then(res => res.text())
+            .then(data => {
+                showResponse('vehiculoCreateResponse', data);
+                event.target.reset();
+            })
+            .catch(err => showResponse('vehiculoCreateResponse', 'Error: ' + err.message, true));
+        }
+
+        // Listar Vehículos
+        function listVehiculos() {
+            fetch(`${API_BASE}/vehiculos`)
+                .then(res => res.json())
+                .then(data => showResponse('vehiculoListResponse', data))
+                .catch(err => showResponse('vehiculoListResponse', 'Error: ' + err.message, true));
+        }
+
+        // Buscar Vehículo por ID
+        function searchVehiculoById() {
+            const id = document.getElementById('searchVehiculoId').value;
+            if (!id) {
+                showResponse('vehiculoSearchResponse', 'Por favor ingresa un ID', true);
+                return;
+            }
+            fetch(`${API_BASE}/vehiculos/${id}`)
+                .then(res => res.json())
+                .then(data => showResponse('vehiculoSearchResponse', data))
+                .catch(err => showResponse('vehiculoSearchResponse', 'Error: ' + err.message, true));
+        }
+
+        // Actualizar Vehículo
+        function updateVehiculo(event) {
+            event.preventDefault();
+            const id = document.getElementById('updateVehiculoId').value;
+            const vehiculo = {
+                modelo: document.getElementById('updateVehiculoModelo').value || undefined,
+                capacidad: document.getElementById('updateVehiculoCapacidad').value ? parseInt(document.getElementById('updateVehiculoCapacidad').value) : undefined,
+                color: document.getElementById('updateVehiculoColor').value || undefined
+            };
+
+            fetch(`${API_BASE}/vehiculos/${id}/edit/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(vehiculo)
+            })
+            .then(res => res.text())
+            .then(data => {
+                showResponse('vehiculoUpdateResponse', data);
+                event.target.reset();
+            })
+            .catch(err => showResponse('vehiculoUpdateResponse', 'Error: ' + err.message, true));
+        }
+
+        // Eliminar Vehículo
+        function deleteVehiculo() {
+            const id = document.getElementById('deleteVehiculoId').value;
+            if (!id) {
+                showResponse('vehiculoDeleteResponse', 'Por favor ingresa un ID', true);
+                return;
+            }
+            fetch(`${API_BASE}/vehiculos/${id}/delete`, {
+                method: 'DELETE'
+            })
+            .then(res => res.text())
+            .then(data => {
+                showResponse('vehiculoDeleteResponse', data);
+                document.getElementById('deleteVehiculoId').value = '';
+            })
+            .catch(err => showResponse('vehiculoDeleteResponse', 'Error: ' + err.message, true));
+        }
+    </script>
+</body>
+</html>
