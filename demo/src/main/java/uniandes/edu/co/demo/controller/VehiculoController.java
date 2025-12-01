@@ -30,7 +30,7 @@ public class VehiculoController {
     @PostMapping("new/save")
     public ResponseEntity<String> createVehiculo(@RequestBody Vehiculo vehiculo) {
         try {
-            // validate and prepare: compute nivel and check availability overlaps
+            // validar y computar nivel
             String nivel = computeNivel(vehiculo);
             vehiculo.setNivel(nivel);
             String validationError = validateDisponibilidades(vehiculo, null);
@@ -48,7 +48,7 @@ public class VehiculoController {
     @PostMapping("/{id}/edit/save")
     public ResponseEntity<String> updateVehiculo(@PathVariable("id") String id, @RequestBody Vehiculo vehiculo) {
         try {
-            // compute level and validate disponibilidades (exclude this vehicle id)
+            // computar nivel y validar disponibilidades (excluir este vehículo)
             String nivel = computeNivel(vehiculo);
             vehiculo.setNivel(nivel);
             String validationError = validateDisponibilidades(vehiculo, id);
@@ -74,10 +74,10 @@ public class VehiculoController {
         }
     }
 
-    // Compute vehicle level for passenger transport according to model and capacity
+    // computar nivel basado en capacidad y tipo de servicio
     private String computeNivel(Vehiculo v) {
         if (v == null) return null;
-        // Determine if any disponibilidad indicates passenger transport
+        // Determinar si hay disponibilidad que indica el pasajero
         String tipo = null;
         if (v.getDisponibilidad() != null) {
             for (Disponibilidad dis : v.getDisponibilidad()) {

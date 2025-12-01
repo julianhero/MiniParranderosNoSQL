@@ -104,19 +104,19 @@ public class ServicioController {
     @PostMapping("/request")
     public ResponseEntity<?> requestServicio(@RequestBody java.util.Map<String, Object> req) {
         try {
-            // Get required fields
+            // Conseguimos datos necesarios
             String usuarioId = (String) req.get("usuario_id");
             String tipoServicio = (String) req.get("tipoServicio");
             if (tipoServicio == null) tipoServicio = "pasajero";
             String nivel = (String) req.get("nivel");
 
-            // Parse origen
+            // Punto origen
             java.util.Map<String, Object> origenMap = (java.util.Map<String, Object>) req.get("origen");
             if (origenMap == null)
                 return ResponseEntity.badRequest().body("origen requerido");
             Punto origen = parsePoint(origenMap);
 
-            // Parse destino (array)
+            // Puntos destino ES UN ARRAY
             java.util.List<Punto> destinos = new java.util.ArrayList<>();
             Object destMap = req.get("destino");
             if (destMap != null && destMap instanceof java.util.List) {
@@ -128,14 +128,14 @@ public class ServicioController {
             if (destinos.isEmpty())
                 destinos.add(origen); // default destino = origen if not provided
 
-            // Calculate distance
+            // Calcular distancia
             double km = haversine(origen.getLatitud(), origen.getLongitud(),
                     destinos.get(0).getLatitud(), destinos.get(0).getLongitud());
 
-            // Calculate cost
+            // Calcular costo
             Number costo = calcularCosto(km, nivel);
 
-            // Find available conductor in same city
+            // Buscar vehiculo disponible
             List<Vehiculo> vehiculos = vehiculoRepository.buscarTodosVehiculos();
             Vehiculo asignado = null;
             for (Vehiculo v : vehiculos) {
@@ -143,7 +143,7 @@ public class ServicioController {
                     continue;
                 if (!hasAvailability(v, tipoServicio))
                     continue;
-                // check no active services
+                // Mirar si tiene servicios activos
                 List<Servicio> activos = servicioRepository.findAll().stream()
                         .filter(s -> s.getConductor_id() != null && s.getConductor_id().equals(v.getConductor_id())
                                 && s.getHoraFin() == null)
@@ -157,12 +157,12 @@ public class ServicioController {
             if (asignado == null)
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("No hay conductores disponibles");
 
-            // Validate nivel compatibility
+            // Validar nivel de servicio
             if (nivel != null && !nivel.equalsIgnoreCase(asignado.getNivel())) {
                 return ResponseEntity.badRequest().body("Nivel solicitado no disponible en este vehículo (disponible: " + asignado.getNivel() + ")");
             }
 
-            // Create servicio
+            // Crear servicio
             Servicio s = new Servicio();
             s.setUsuario_id(usuarioId);
             s.setConductor_id(asignado.getConductor_id());
@@ -240,10 +240,10 @@ public class ServicioController {
                 return ResponseEntity.badRequest().body("Servicio ya finalizado");
             }
 
-            // set finish time
+            // Poner hora fin
             s.setHoraFin(java.time.LocalDateTime.now());
 
-            // if distancia not set, compute from origen -> first destino
+            // Si la distancia no está seteada, calcularla
             if (s.getDistancia_km() == null || s.getDistancia_km().doubleValue() == 0) {
                 if (s.getOrigen() != null && s.getDestino() != null && !s.getDestino().isEmpty()) {
                     double km = haversine(s.getOrigen().getLatitud(), s.getOrigen().getLongitud(),
@@ -252,7 +252,7 @@ public class ServicioController {
                 }
             }
 
-            // if costo not set, compute based on distancia and nivel
+            // Si el costo no está seteado, calcularlo
             if (s.getCosto() == null || s.getCosto().doubleValue() == 0) {
                 double kmVal = s.getDistancia_km() != null ? s.getDistancia_km().doubleValue() : 0.0;
                 Number costo = calcularCosto(kmVal, s.getNivel());
