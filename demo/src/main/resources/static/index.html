@@ -99,6 +99,12 @@
             <li class="nav-item">
                 <button class="nav-link" onclick="switchTab('vehiculos')">Vehículos</button>
             </li>
+                <li class="nav-item">
+                    <button class="nav-link" onclick="switchTab('servicios')">Servicios</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" onclick="switchTab('historico')">Histórico</button>
+                </li>
         </ul>
 
         <!-- SECCIÓN USUARIOS -->
@@ -206,6 +212,110 @@
                     </div>
                 </div>
                 <div id="usuarioDeleteResponse"></div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN SERVICIOS -->
+        <div id="servicios" class="tab-content">
+            <h3>Gestión de Servicios</h3>
+
+            <!-- Solicitar Servicio -->
+            <div class="form-section">
+                <h5>Solicitar Servicio (RF6)</h5>
+                <form onsubmit="requestServicio(event)">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">ID Usuario (pasajero):</label>
+                            <input type="text" class="form-control" id="solUsuarioId" placeholder="u001" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nivel (opcional):</label>
+                            <input type="text" class="form-control" id="solNivel" placeholder="Estandar / Confort / Large">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Origen (direccion):</label>
+                            <input type="text" class="form-control" id="solOrigenDireccion" placeholder="Calle 1" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Lat:</label>
+                            <input type="number" step="any" class="form-control" id="solOrigenLat" placeholder="4.6" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Lng:</label>
+                            <input type="number" step="any" class="form-control" id="solOrigenLng" placeholder="-74.08" required>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Destino (direccion):</label>
+                            <input type="text" class="form-control" id="solDestinoDireccion" placeholder="Calle 2">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Lat destino:</label>
+                            <input type="number" step="any" class="form-control" id="solDestinoLat" placeholder="4.61">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Lng destino:</label>
+                            <input type="number" step="any" class="form-control" id="solDestinoLng" placeholder="-74.07">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success mt-3">Solicitar</button>
+                </form>
+                <div id="servicioRequestResponse"></div>
+            </div>
+
+            <!-- Servicios activos -->
+            <div class="form-section">
+                <h5>Servicios Activos</h5>
+                <button class="btn btn-info" onclick="listActiveServicios()">Refrescar activos</button>
+                <div id="serviciosActivosList"></div>
+            </div>
+
+            <!-- Finalizar servicio -->
+            <div class="form-section">
+                <h5>Finalizar Servicio (RF7)</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="finishServicioId" placeholder="ID del servicio">
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary" onclick="finishServicioById()">Finalizar</button>
+                    </div>
+                </div>
+                <div id="servicioFinishResponse"></div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN HISTÓRICO -->
+        <div id="historico" class="tab-content">
+            <h3>Histórico de Servicios (RFC1)</h3>
+
+            <div class="form-section">
+                <h5>Histórico por Usuario (pasajero)</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="histUsuarioId" placeholder="ID pasajero">
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary" onclick="getHistoricoUsuario()">Consultar</button>
+                    </div>
+                </div>
+                <div id="historicoUsuarioResponse"></div>
+            </div>
+
+            <div class="form-section">
+                <h5>Histórico por Conductor</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="histConductorId" placeholder="ID conductor">
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary" onclick="getHistoricoConductor()">Consultar</button>
+                    </div>
+                </div>
+                <div id="historicoConductorResponse"></div>
             </div>
         </div>
 
@@ -550,6 +660,113 @@
                 document.getElementById('deleteVehiculoId').value = '';
             })
             .catch(err => showResponse('vehiculoDeleteResponse', 'Error: ' + err.message, true));
+        }
+        
+        // ========== SERVICIOS ==========
+
+        // Solicitar servicio (RF6)
+        function requestServicio(event) {
+            event.preventDefault();
+            const usuarioId = document.getElementById('solUsuarioId').value;
+            const nivel = document.getElementById('solNivel').value || undefined;
+            const origen = {
+                direccion: document.getElementById('solOrigenDireccion').value,
+                lat: parseFloat(document.getElementById('solOrigenLat').value),
+                lng: parseFloat(document.getElementById('solOrigenLng').value),
+                ciudad: ''
+            };
+            const destinoDireccion = document.getElementById('solDestinoDireccion').value;
+            const destino = [];
+            if (destinoDireccion) {
+                destino.push({
+                    direccion: destinoDireccion,
+                    lat: document.getElementById('solDestinoLat').value ? parseFloat(document.getElementById('solDestinoLat').value) : 0,
+                    lng: document.getElementById('solDestinoLng').value ? parseFloat(document.getElementById('solDestinoLng').value) : 0,
+                    ciudad: ''
+                });
+            }
+
+            const body = {
+                usuario_id: usuarioId,
+                origen: origen,
+                destino: destino,
+                nivel: nivel
+            };
+
+            fetch(`${API_BASE}/servicios/request`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            })
+            .then(async res => {
+                const text = await res.text();
+                try { return JSON.parse(text); } catch(e) { return text; }
+            })
+            .then(data => showResponse('servicioRequestResponse', data))
+            .catch(err => showResponse('servicioRequestResponse', 'Error: ' + err.message, true));
+        }
+
+        // Listar servicios activos (horaFin == null)
+        function listActiveServicios() {
+            fetch(`${API_BASE}/servicios`)
+                .then(res => res.json())
+                .then(data => {
+                    const activos = Array.isArray(data) ? data.filter(s => s.horaFin == null) : [];
+                    const el = document.getElementById('serviciosActivosList');
+                    if (!el) return;
+                    if (activos.length === 0) {
+                        el.innerHTML = '<div class="response-box">No hay servicios activos.</div>';
+                        return;
+                    }
+                    let html = '<table class="table table-sm"><thead><tr><th>ID</th><th>Pasajero</th><th>Conductor</th><th>Vehículo</th><th>HoraInicio</th><th>Acción</th></tr></thead><tbody>';
+                    activos.forEach(s => {
+                        html += `<tr><td>${s.id || s._id}</td><td>${s.usuario_id}</td><td>${s.conductor_id}</td><td>${s.vehiculo_id}</td><td>${s.horaInicio || ''}</td><td><button class="btn btn-sm btn-primary" onclick="finishServicio('${s.id || s._id}')">Finalizar</button></td></tr>`;
+                    });
+                    html += '</tbody></table>';
+                    el.innerHTML = html;
+                })
+                .catch(err => showResponse('serviciosActivosList', 'Error: ' + err.message, true));
+        }
+
+        // Finalizar servicio (button per-row)
+        function finishServicio(id) {
+            fetch(`${API_BASE}/servicios/${id}/finish`, { method: 'POST' })
+                .then(async res => {
+                    const text = await res.text();
+                    try { return JSON.parse(text); } catch(e){ return text; }
+                })
+                .then(data => {
+                    showResponse('servicioFinishResponse', data);
+                    listActiveServicios();
+                })
+                .catch(err => showResponse('servicioFinishResponse', 'Error: ' + err.message, true));
+        }
+
+        // Finalizar por ID (campo manual)
+        function finishServicioById() {
+            const id = document.getElementById('finishServicioId').value;
+            if (!id) { showResponse('servicioFinishResponse', 'Ingresa un ID', true); return; }
+            finishServicio(id);
+        }
+
+        // Histórico pasajero (RFC1)
+        function getHistoricoUsuario() {
+            const id = document.getElementById('histUsuarioId').value;
+            if (!id) { showResponse('historicoUsuarioResponse', 'Ingresa un ID', true); return; }
+            fetch(`${API_BASE}/servicios/historico/usuario/${id}`)
+                .then(res => res.json())
+                .then(data => showResponse('historicoUsuarioResponse', data))
+                .catch(err => showResponse('historicoUsuarioResponse', 'Error: ' + err.message, true));
+        }
+
+        // Histórico conductor
+        function getHistoricoConductor() {
+            const id = document.getElementById('histConductorId').value;
+            if (!id) { showResponse('historicoConductorResponse', 'Ingresa un ID', true); return; }
+            fetch(`${API_BASE}/servicios/historico/conductor/${id}`)
+                .then(res => res.json())
+                .then(data => showResponse('historicoConductorResponse', data))
+                .catch(err => showResponse('historicoConductorResponse', 'Error: ' + err.message, true));
         }
     </script>
 </body>

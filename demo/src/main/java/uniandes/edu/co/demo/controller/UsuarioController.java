@@ -2,6 +2,7 @@ package uniandes.edu.co.demo.controller;
 
 import java.util.List;
 
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import uniandes.edu.co.demo.modelo.Usuario;
 import uniandes.edu.co.demo.repository.UsuarioRepository;
+import uniandes.edu.co.demo.repository.UsuarioServicioCustom;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private UsuarioServicioCustom usuarioServicioCustom;
 
     @PostMapping("new/save")
     public ResponseEntity<String> createUsuario(@RequestBody Usuario usuario) {
@@ -83,4 +88,16 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/conductores/top20")
+public ResponseEntity<List<Document>> obtenerTop20Conductores() {
+    try {
+        List<Document> resultado = usuarioServicioCustom.obtenerTop20Conductores();
+        return ResponseEntity.ok(resultado);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
+
 }
