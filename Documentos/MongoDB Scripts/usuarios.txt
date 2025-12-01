@@ -1,0 +1,29 @@
+db.createCollection("usuarios", {
+  validator: {
+    $jsonSchema: {
+      bsonType: 'object',
+      required: ['_id','cedula','celular','correo','nombre','tarjetas','tipo'],
+      properties: {
+        _id: { bsonType: 'string' },
+        cedula: { bsonType: 'string' },
+        celular: { bsonType: 'string' },
+        correo: { bsonType: 'string' },
+        nombre: { bsonType: 'string' },
+        tarjetas: {
+          bsonType: 'array',
+          items: {
+            bsonType: 'object',
+            properties: {
+              cvv: { bsonType: 'string' },
+              nombreEnTarjeta: { bsonType: 'string' },
+              numero: { bsonType: 'string' },
+              vencimiento: { bsonType: 'string' }
+            },
+            required: ['cvv','nombreEnTarjeta','numero','vencimiento']
+          }
+        },
+        tipo: { bsonType: 'string' }
+      }
+    }
+  }
+})

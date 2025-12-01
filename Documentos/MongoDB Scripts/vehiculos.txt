@@ -1,0 +1,34 @@
+db.createCollection("vehiculos", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["_id","capacidad","ciudad","color","conductor_id","disponibilidad","marca","modelo","nivel","placa","tipo"],
+      properties: {
+        _id: { bsonType: "string" },
+        capacidad: { bsonType: "int" },
+        ciudad: { bsonType: "string" },
+        color: { bsonType: "string" },
+        conductor_id: { bsonType: "string" },
+        disponibilidad: {
+          bsonType: "array",
+          items: {
+            bsonType: "object",
+            properties: {
+              dia: { bsonType: "string" },
+              horaInicio: { bsonType: "string" },
+              horaFin: { bsonType: "string" },
+              tipoServicio: { bsonType: "string" }
+            },
+            required: ["dia","horaInicio","horaFin","tipoServicio"]
+          }
+        },
+        marca: { bsonType: "string" },
+        modelo: { bsonType: "string" },
+        nivel: { bsonType: "string" },
+        placa: { bsonType: "string" },
+        tipo: { bsonType: "string" }
+      }
+    }
+  }
+})
+

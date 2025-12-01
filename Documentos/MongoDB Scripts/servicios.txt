@@ -1,0 +1,40 @@
+"$jsonSchema": {
+  "bsonType": "object",                // Cada documento debe ser un objeto
+  "required": ["_id","conductor_id","costo","destino","distancia_km","horaInicio","nivel","origen","tipoServicio","usuario_id","vehiculo_id"], // Campos obligatorios
+  "properties": {
+    _id: { "bsonType": ["string","objectId"] }, // ID del servicio puede ser string u ObjectId
+    _class: { "bsonType": "string" },           // Campo extra que algunas veces genera Spring Boot
+    conductor_id: { "bsonType": "string" },     // ID del conductor
+    costo: { "bsonType": ["int","long"] },      // Costo del servicio
+    destino: {                                  // Destinos del servicio (arreglo)
+      "bsonType": "array",
+      "items": {
+        "bsonType": "object",
+        "properties": {
+          ciudad: { "bsonType": "string" },
+          direccion: { "bsonType": "string" },
+          latitud: { "bsonType": "double" },
+          longitud: { "bsonType": "double" }
+        },
+        "required": ["ciudad","direccion","latitud","longitud"]
+      }
+    },
+    distancia_km: { "bsonType": ["double","int"] }, // Distancia del servicio
+    horaInicio: { "bsonType": "date" },            // Inicio del servicio
+    horaFin: { "bsonType": "date" },               // Fin del servicio
+    nivel: { "bsonType": ["string","null"] },     // Nivel del servicio
+    origen: {                                      // Origen del servicio
+      "bsonType": "object",
+      "properties": {
+        ciudad: { "bsonType": "string" },
+        direccion: { "bsonType": "string" },
+        latitud: { "bsonType": "double" },
+        longitud: { "bsonType": "double" }
+      },
+      "required": ["ciudad","direccion","latitud","longitud"]
+    },
+    tipoServicio: { "bsonType": "string" },       // Tipo de servicio
+    usuario_id: { "bsonType": "string" },         // ID del usuario
+    vehiculo_id: { "bsonType": "string" }         // ID del vehículo
+  }
+}
